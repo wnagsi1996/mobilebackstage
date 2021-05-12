@@ -1,0 +1,166 @@
+<template>
+	<div>
+		<div class="popup-title">搜索</div>
+		<div class="search-info">
+			<van-form>
+				<!-- <van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="picker" 
+					:value="fromorder.channel.text" label="收入渠道" placeholder="收入渠道" @click="showPickerList(1)"/>
+				</van-cell-group> -->
+				<van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="picker" 
+					:value="fromorder.currency.text" label="收入货币" placeholder="收入货币" @click="showPickerList(0)"/>
+				</van-cell-group>
+				<van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="picker" 
+					:value="fromorder.orderStaus.text" label="订单状态" placeholder="订单状态" @click="showPickerList(4)"/>
+				</van-cell-group>
+				<van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="picker" 
+					:value="fromorder.orderType.text" label="订单类别" placeholder="订单类别" @click="showPickerList(2)"/>
+				</van-cell-group>
+				<van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="datetimePicker" 
+					:value="fromorder.date1" label="开始时间" placeholder="开始时间" @click="showdate(5)"/>
+				</van-cell-group>
+				<van-cell-group>
+					<van-field readonly clickable right-icon="arrow-down" name="datetimePicker" 
+					:value="fromorder.date2" label="结束时间" placeholder="结束时间" @click="showdate(6)"/>
+				</van-cell-group>
+			</van-form>
+			<div class="search-btn">
+				<van-button type="info" block round @click="searchConfirm">搜索</van-button>
+			</div>
+		</div>
+		<van-popup v-model="PopupShowPicker" round position="bottom">
+			<van-picker v-if="!isdate"
+			    show-toolbar
+			    :columns="columns"
+				:loading="pickerLoading"
+			    @confirm="onConfirm"
+			    @cancel="PopupShowPicker = false"
+			  />
+			  <van-datetime-picker v-else
+			    v-model="currentDate"
+			    type="date"
+			    title="选择年月日"
+				@confirm="onConfirm"
+				@cancel="PopupShowPicker = false"
+			  />
+		</van-popup>
+	</div>
+</template>
+
+<script>
+	import {mapGetters} from 'vuex'
+	import {Button,Popup,Form,Field,CellGroup,Picker,DatetimePicker} from 'vant'
+	import {aisle,cwCurrency,cwOrderType,cwOrderStaus} from '@/utils/searchCondition.js' //引入公共的财务订单类别/财务货币类型
+	export default({
+		name:'FinancialAuditTrail-search',
+		computed:{
+			...mapGetters({
+				jduserdata:'jdUserList',
+				fduserdata:'fdUserList'
+			})
+		},
+		components:{
+			[Button.name]:Button,
+			[Popup.name]:Popup,
+			[Form.name]:Form,
+			[Field.name]:Field,
+			[CellGroup.name]:CellGroup,
+			[Picker.name]:Picker,
+			[DatetimePicker.name]:DatetimePicker
+		},
+		props:{
+			fromorder:{
+				type:Object,
+				default:new Object()
+			}
+		},
+		data(){
+			return{
+				PopupShowPicker:false,  //选择器弹框
+				columns:[],  //下拉列表存放数据
+				iftype:0  ,//弹出列表选择器  0用户列表  1月份  2类别
+				pickerLoading:false,  //下拉列表加载状态
+				currentDate: new Date(), //当前时间
+				isdate:false  ,//判断弹出的是否是时间别
+				newOrderType:[]  ,//新的订单类别
+			}
+		},
+		created() {
+			cwOrderType.map(n=>{
+				if(n.value=='' || n.value=='0'||n.value=='4'||n.value=='6'||n.value=='9'){
+					this.newOrderType.push(n);
+				}
+			})
+		},
+		methods:{
+			//显示搜索得选择器列表
+			async showPickerList(i){
+				this.isdate=false;
+				this.pickerLoading=true
+				this.iftype=i;
+				this.PopupShowPicker=true
+				this.columns=[];
+				switch(i){
+					case 0: //货币类型
+						this.columns=cwCurrency
+						break;
+					case 1:  //订单类别
+						this.columns=aisle
+						break;
+					case 2:  //订单类型
+						this.columns=this.newOrderType;
+						break;
+					case 4:  //订单状态
+						this.columns=cwOrderStaus;
+						break;
+				}
+				this.pickerLoading=false
+			},
+			//搜索选择器确认后得值
+			onConfirm(val){
+				switch(this.iftype){
+					case 0:
+						this.fromorder.currency.text=val.text;
+						this.fromorder.currency.value=val.value;
+						break;
+					case 1:
+						this.fromorder.channel.text=val.text;
+						this.fromorder.channel.value=val.value;
+						break;
+					case 2:
+						this.fromorder.orderType.text=val.text;
+						this.fromorder.orderType.value=val.value;
+						break;
+					case 4:
+						this.fromorder.orderStaus.text=val.text;
+						this.fromorder.orderStaus.value=val.value;
+						break;
+					case 5:
+						this.fromorder.date1=`${val.getFullYear()}-${val.getMonth() + 1}-${val.getDate()}`;
+						break;
+					case 6:
+						this.fromorder.date2=`${val.getFullYear()}-${val.getMonth() + 1}-${val.getDate()}`;
+				}
+				this.PopupShowPicker=false
+			},
+			//显示时间选择
+			showdate(i){
+				this.PopupShowPicker=true;
+				this.isdate=true;
+				this.iftype=i
+			},
+			//搜索提交
+			searchConfirm(){
+				this.$emit('update:fromorder', this.fromorder);
+				this.$emit('loadproductdata',1)
+			}
+		}
+	})
+</script>
+
+<style>
+</style>

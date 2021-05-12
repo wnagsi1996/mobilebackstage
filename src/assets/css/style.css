@@ -1,0 +1,16 @@
+.one-today{margin:15px;border-radius: 5px;background-color: #fff;padding:10px;}
+.line{width:calc(100% - 30px) !important;margin:0 15px 15px;background-color: #FFF;border-radius: 5px;}
+.userlist{margin: 15px;}
+.userlist-grids{display: flex;flex-wrap:wrap;align-items: center;}
+.userinfo-grids{width:30%;height:50px;line-height:50px;background-color: #fff;border-radius: 5px;margin:10px 0;text-align: center;}
+.userinfo-grids:nth-child(3n-1){margin:10px 5%}
+.aims-circle{display: flex;margin:15px;justify-content: space-between;flex-wrap: wrap;}
+.aims-circle1{width: 48%;background-color: #fff;padding:10px 0 10px 5px;margin: 7.5px 0;}
+.aims-desc p{display: block;font-size: 10px;padding:2px 0;color: #222;}
+.aims-info{display: flex;}
+.aims-desc{flex: 1;margin-left: 8px;}
+.aims-title h5{text-align: left;padding-bottom: 15px;margin-left: 5px;}
+
+.link-item{margin:15px;display: flex;flex-wrap: wrap;justify-content: space-between;}
+.link-item1{width:48%;background-color: #fff;padding: 10px;margin: 7.5px 0;}
+.link-num{font-size: 24px;color: #1989FA;margin-top: 5px;}
